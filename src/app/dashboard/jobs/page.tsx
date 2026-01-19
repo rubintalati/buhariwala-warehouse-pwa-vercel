@@ -95,7 +95,7 @@ export default function JobsPage() {
 
   const generateReport = (jobId: string, e: React.MouseEvent) => {
     e.stopPropagation() // Prevent card click navigation
-    router.push(`/dashboard/jobs/${jobId}/reports`)
+    router.push(`/dashboard/jobs/${jobId}/reports` as any)
   }
 
   const getStatusColor = (status: Job['status']) => {
@@ -148,7 +148,7 @@ export default function JobsPage() {
 
   const getJobIcon = (status: Job['status']) => {
     switch (status) {
-      case 'pending':
+      case 'pending_approval':
         return Package
       case 'in_progress':
         return Truck

@@ -77,7 +77,7 @@ export async function GET() {
 
     // Get warehouse schedule information for jobs with warehouse entries
     const warehouseJobIds = jobsData?.filter(job => job.warehouse_holding)?.map(job => job.id) || []
-    let warehouseSchedules = []
+    let warehouseSchedules: any[] = []
     if (warehouseJobIds.length > 0) {
       const { data: scheduleData, error: scheduleError } = await supabaseAdmin
         .from('job_schedule')
@@ -115,18 +115,18 @@ export async function GET() {
       const schedules = warehouseSchedulesMap.get(job.id) || []
 
       // Get pickup and delivery addresses and dates from locations
-      const pickupLocation = locations.find(loc => loc.location_type === 'pickup')
-      const deliveryLocation = locations.find(loc => loc.location_type === 'delivery')
+      const pickupLocation = locations.find((loc: any) => loc.location_type === 'pickup')
+      const deliveryLocation = locations.find((loc: any) => loc.location_type === 'delivery')
 
       // Find warehouse entry/exit dates from schedule
-      const warehouseIn = schedules.find(s => s.schedule_type === 'warehouse_in')
-      const warehouseOut = schedules.find(s => s.schedule_type === 'warehouse_out')
+      const warehouseIn = schedules.find((s: any) => s.schedule_type === 'warehouse_in')
+      const warehouseOut = schedules.find((s: any) => s.schedule_type === 'warehouse_out')
 
       // Create warehouse entry object if warehouse is involved
       let warehouse_entry = null
       if (job.warehouse_holding && (warehouseIn || warehouseOut || job.warehouses)) {
         warehouse_entry = {
-          name: warehouseIn?.warehouses?.name || job.warehouses?.name || 'Express Hub Delhi',
+          name: warehouseIn?.warehouses?.name || (job.warehouses as any)?.name || 'Express Hub Delhi',
           from_date: warehouseIn?.scheduled_date || job.estimated_storage_start_date,
           to_date: warehouseOut?.scheduled_date || job.estimated_storage_end_date
         }

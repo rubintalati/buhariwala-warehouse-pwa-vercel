@@ -3,10 +3,10 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string; roomId: string } }
+  { params }: { params: Promise<{ id: string; roomId: string }> }
 ) {
   try {
-    const { id: jobId, roomId } = params
+    const { id: jobId, roomId } = await params
 
     const { data, error } = await supabaseAdmin
       .from('items')
@@ -58,10 +58,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string; roomId: string } }
+  { params }: { params: Promise<{ id: string; roomId: string }> }
 ) {
   try {
-    const { id: jobId, roomId } = params
+    const { id: jobId, roomId } = await params
     const body = await request.json()
     const {
       item_name,

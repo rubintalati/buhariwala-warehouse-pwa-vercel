@@ -119,8 +119,8 @@ export default function NewJobPage() {
 
       // If warehouse is enabled but dates are empty, try to get from location dates
       if (job.warehouse_holding && !startDate && !endDate) {
-        const pickupLocation = job.pickup_locations?.find(loc => loc.location_type === 'pickup')
-        const deliveryLocation = job.delivery_locations?.find(loc => loc.location_type === 'delivery')
+        const pickupLocation = job.pickup_locations?.find((loc: any) => loc.location_type === 'pickup')
+        const deliveryLocation = job.delivery_locations?.find((loc: any) => loc.location_type === 'delivery')
 
         if (pickupLocation?.date) {
           startDate = pickupLocation.date

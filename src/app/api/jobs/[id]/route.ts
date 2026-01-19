@@ -85,7 +85,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     })
 
     // Get warehouse schedule information if warehouse is involved
-    let warehouseSchedules = []
+    let warehouseSchedules: any[] = []
     if (jobData.warehouse_holding) {
       const { data: scheduleData, error: scheduleError } = await supabaseAdmin
         .from('job_schedule')
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     let warehouse_entry = null
     if (jobData.warehouse_holding && (warehouseIn || warehouseOut || jobData.warehouses)) {
       warehouse_entry = {
-        name: warehouseIn?.warehouses?.name || jobData.warehouses?.name || 'Express Hub Delhi',
+        name: warehouseIn?.warehouses?.name || (jobData.warehouses as any)?.name || 'Express Hub Delhi',
         from_date: warehouseIn?.scheduled_date || jobData.estimated_storage_start_date,
         to_date: warehouseOut?.scheduled_date || jobData.estimated_storage_end_date
       }
