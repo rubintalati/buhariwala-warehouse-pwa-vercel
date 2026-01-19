@@ -1,26 +1,363 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.75rem;
+  /* Modern Logistics Color Palette - Light Theme */
+  --background: #fafafa;
+  --foreground: #1a1a1a;
+
+  /* Primary - Crimson Red for Logistics Branding */
+  --primary: #800E13;
+  --primary-foreground: #ffffff;
+
+  /* Secondary - Warm Orange for Energy */
+  --secondary: #f97316;
+  --secondary-foreground: #ffffff;
+
+  /* Cards with subtle elevation */
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+
+  /* Muted tones for supporting elements */
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+
+  /* Accent - Deep Red */
+  --accent: #991b1b;
+  --accent-foreground: #ffffff;
+
+  /* Status colors */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  /* Borders and inputs */
+  --border: #e4e4e7;
+  --input: #ffffff;
+  --ring: #800E13;
+
+  /* Chart colors for logistics dashboard */
+  --chart-1: #800E13; /* Primary Crimson */
+  --chart-2: #f97316; /* Orange */
+  --chart-3: #16a34a; /* Green */
+  --chart-4: #7c3aed; /* Purple */
+  --chart-5: #dc2626; /* Red */
+
+  /* Sidebar - Professional Dark Red */
+  --sidebar: #7f1d1d;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #dc2626;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #800E13;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #800E13;
+  --sidebar-ring: #dc2626;
+}
+
+.dark {
+  /* Dark Theme for Professional Logistics App */
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+
+  /* Primary - Brighter crimson for dark theme */
+  --primary: #dc2626;
+  --primary-foreground: #ffffff;
+
+  /* Secondary - Softer orange */
+  --secondary: #f59e0b;
+  --secondary-foreground: #1a1a1a;
+
+  /* Cards with dark elevation */
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+
+  /* Muted tones for dark theme */
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+
+  /* Accent - Bright red */
+  --accent: #ef4444;
+  --accent-foreground: #ffffff;
+
+  /* Status colors for dark theme */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Borders and inputs for dark */
+  --border: #334155;
+  --input: #1e293b;
+  --ring: #dc2626;
+
+  /* Chart colors for dark theme */
+  --chart-1: #dc2626; /* Bright Crimson */
+  --chart-2: #f59e0b; /* Amber */
+  --chart-3: #22c55e; /* Green */
+  --chart-4: #8b5cf6; /* Purple */
+  --chart-5: #ef4444; /* Red */
+
+  /* Sidebar - Darker red */
+  --sidebar: #450a0a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #dc2626;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #800E13;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #7f1d1d;
+  --sidebar-ring: #dc2626;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Professional focus states */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Modern selection styling */
+  ::selection {
+    @apply bg-primary/20 text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Gradient backgrounds for modern look */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  }
+
+  .bg-gradient-secondary {
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--warning) 100%);
+  }
+
+  .bg-gradient-subtle {
+    background: linear-gradient(135deg, var(--background) 0%, var(--muted) 100%);
+  }
+
+  /* Professional card shadows */
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .shadow-card-hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+
+  .shadow-card-elevated {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  /* Modern button animations */
+  .button-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .button-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .button-shine:hover::before {
+    left: 100%;
+  }
+
+  /* Professional loading animations */
+  .loading-dots {
+    display: inline-block;
+  }
+
+  .loading-dots::after {
+    content: '';
+    animation: loading-dots 1.5s infinite;
+  }
+
+  @keyframes loading-dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+  }
+
+  /* Logistics-specific utility classes */
+  .status-success {
+    @apply bg-green-500/10 text-green-500 border-green-500/20;
+  }
+
+  .status-warning {
+    @apply bg-yellow-500/10 text-yellow-500 border-yellow-500/20;
+  }
+
+  .status-error {
+    @apply bg-red-500/10 text-red-500 border-red-500/20;
+  }
+
+  .status-pending {
+    @apply bg-blue-500/10 text-blue-500 border-blue-500/20;
+  }
+
+  /* Splash Screen Animations */
+  .animate-bounceIn {
+    animation: bounceIn 1.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  .animate-slideInUp {
+    animation: slideInUp 1s ease-out;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 1s ease-out;
+  }
+
+  .animate-fadeOut {
+    animation: fadeOut 1s ease-in;
+  }
+
+  @keyframes bounceIn {
+    from,
+    20%,
+    40%,
+    60%,
+    80%,
+    to {
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    0% {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 0.3);
+    }
+
+    20% {
+      transform: scale3d(1.1, 1.1, 1.1);
+    }
+
+    40% {
+      transform: scale3d(0.9, 0.9, 0.9);
+    }
+
+    60% {
+      opacity: 1;
+      transform: scale3d(1.03, 1.03, 1.03);
+    }
+
+    80% {
+      transform: scale3d(0.97, 0.97, 0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale3d(1, 1, 1);
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      transform: translate3d(0, 100%, 0);
+      opacity: 0;
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Performance optimizations for splash screen animations */
+  .animate-bounceIn,
+  .animate-slideInUp,
+  .animate-fadeIn,
+  .animate-fadeOut {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+  }
 }
