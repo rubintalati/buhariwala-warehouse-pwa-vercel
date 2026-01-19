@@ -1,5 +1,3 @@
-import type { NextConfig } from "next";
-
 // Disabled PWA for Netlify deployment to avoid service worker complexity
 // const withPWA = require('next-pwa')({
 //   dest: 'public',
@@ -8,7 +6,8 @@ import type { NextConfig } from "next";
 //   disable: process.env.NODE_ENV === 'development',
 // });
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -36,4 +35,4 @@ const nextConfig: NextConfig = {
   turbopack: {},
 };
 
-export default nextConfig;
+module.exports = nextConfig;
