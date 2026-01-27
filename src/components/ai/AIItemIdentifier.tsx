@@ -113,7 +113,7 @@ export default function AIItemIdentifier({
     }
   }
 
-  const handleMultiplePhotosProcess = async (files: File[], imageDatas: string[]) => {
+  const handleMultiplePhotosProcess = async (imageDatas: string[], files: File[]) => {
     console.log('handleMultiplePhotosProcess called with:', { filesCount: files?.length, imageDataCount: imageDatas?.length })
 
     if (!files || files.length === 0) {

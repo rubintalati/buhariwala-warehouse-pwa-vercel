@@ -276,7 +276,7 @@ export default function CameraCapture({
       if (onMultipleCapture) {
         if (selectedFiles.length > 0) {
           // Files already exist (from gallery upload)
-          onMultipleCapture(selectedFiles, capturedImages)
+          onMultipleCapture(capturedImages, selectedFiles)
         } else {
           // Need to convert captured images to files
           const promises = capturedImages.map((imageData, index) => {
@@ -291,7 +291,7 @@ export default function CameraCapture({
 
           Promise.all(promises)
             .then(files => {
-              onMultipleCapture(files, capturedImages)
+              onMultipleCapture(capturedImages, files)
               // Reset state after successful processing
               setCapturedImage(null)
               setCapturedImages([])
