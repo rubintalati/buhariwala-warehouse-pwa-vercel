@@ -1,17 +1,12 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
   "functions": {
-    "src/app/api/**/*.ts": {
+    "app/api/**/*.ts": {
       "runtime": "nodejs20.x",
-      "maxDuration": 60
+      "maxDuration": 30
     }
   },
   "regions": ["bom1", "sin1"],
-  "env": {
-    "NODE_ENV": "production"
-  },
   "headers": [
     {
       "source": "/api/(.*)",
@@ -30,12 +25,5 @@
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/health",
-      "destination": "/api/health"
-    }
-  ],
-  "crons": []
+  ]
 }

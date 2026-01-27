@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const isAuthPage = req.nextUrl.pathname.startsWith('/auth')
   const isPublicPage = req.nextUrl.pathname === '/' || isAuthPage
 

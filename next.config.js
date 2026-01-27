@@ -57,8 +57,6 @@ const nextConfig = {
   // Vercel-specific optimizations
   poweredByHeader: false,
   compress: true,
-  // Output configuration for Vercel
-  output: 'standalone',
 };
 
 // Export configuration (uncomment withPWA if PWA is needed)
