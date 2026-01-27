@@ -59,6 +59,7 @@ export default function JobItemsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [showAICapture, setShowAICapture] = useState(false)
+  const [multiplePhotoMode, setMultiplePhotoMode] = useState(false)
   const [showManualForm, setShowManualForm] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [currentUser, setCurrentUser] = useState<any>(null)
@@ -385,16 +386,74 @@ export default function JobItemsPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setShowAICapture(false)}>
+          <Button variant="outline" onClick={() => {
+            setShowAICapture(false)
+            setMultiplePhotoMode(false)
+          }} className="border-0 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Items
           </Button>
+          <div className="text-sm text-gray-600">
+            {multiplePhotoMode ? 'Multiple Items Mode' : 'Single Item Mode'}
+          </div>
         </div>
 
         <AIItemIdentifier
           onItemIdentified={handleAIItemIdentified}
-          onCancel={() => setShowAICapture(false)}
+          onItemsIdentified={async (items, imageDatas) => {
+            setIsCreating(true)
+            setError('')
+
+            try {
+              // Create multiple items
+              const createPromises = items.map(async (aiItem, index) => {
+                const response = await fetch(`/api/jobs/${jobId}/items`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    item_name: aiItem.itemName,
+                    category: aiItem.category,
+                    quantity: aiItem.quantity || 1,
+                    condition: aiItem.condition,
+                    item_value: aiItem.estimatedValue || 0,
+                    dimensions: aiItem.dimensions,
+                    handling_instructions: aiItem.handlingInstructions,
+                    fragile: aiItem.isFragile,
+                    ai_confidence_score: aiItem.confidenceScore,
+                    manual_verification: aiItem.confidenceScore < 0.8,
+                    created_by: currentUser?.id,
+                    imageData: imageDatas[index]
+                  }),
+                })
+
+                if (!response.ok) {
+                  const result = await response.json()
+                  throw new Error(result.error || `Failed to create item ${index + 1}`)
+                }
+
+                return response.json()
+              })
+
+              await Promise.all(createPromises)
+
+              await loadData()
+              setShowAICapture(false)
+              setMultiplePhotoMode(false)
+            } catch (error) {
+              console.error('Error creating multiple items:', error)
+              setError(error instanceof Error ? error.message : 'Failed to create items')
+            } finally {
+              setIsCreating(false)
+            }
+          }}
+          onCancel={() => {
+            setShowAICapture(false)
+            setMultiplePhotoMode(false)
+          }}
           disabled={isCreating}
+          allowMultiplePhotos={multiplePhotoMode}
         />
       </div>
     )
@@ -411,7 +470,7 @@ export default function JobItemsPage() {
       {/* Header Section - Match Jobs Page Pattern */}
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" onClick={() => router.back()} className="border-0 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
@@ -431,25 +490,41 @@ export default function JobItemsPage() {
           <div className="flex flex-col gap-2">
             <Button
               onClick={() => setShowManualForm(!showManualForm)}
-              className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary font-semibold px-6 w-fit"
+              className="bg-[#800E13] text-white hover:bg-[#800E13]/90 font-semibold px-6 w-fit"
             >
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Item Manually
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowAICapture(true)}
-              className="text-xs w-fit"
-            >
-              <Camera className="mr-2 h-3 w-3" />
-              Add via Image (Testing)
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setMultiplePhotoMode(false)
+                  setShowAICapture(true)
+                }}
+                className="text-xs w-fit"
+              >
+                <Camera className="mr-2 h-3 w-3" />
+                Add Single Item
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setMultiplePhotoMode(true)
+                  setShowAICapture(true)
+                }}
+                className="text-xs w-fit bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              >
+                <Camera className="mr-2 h-3 w-3" />
+                Add Multiple Items
+              </Button>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
-              <Package className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">{items.length} Items</span>
+            <div className="flex items-center gap-2 bg-[#800E13]/10 rounded-full px-3 py-2">
+              <Package className="w-4 h-4 text-[#800E13]" />
+              <span className="text-sm font-medium text-[#800E13]">{items.length} Items</span>
             </div>
             {getTotalValue() > 0 && (
               <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1">
@@ -680,7 +755,7 @@ export default function JobItemsPage() {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-2 border-t border-border">
+                <div className="flex gap-2 pt-3">
                   <Button
                     variant="outline"
                     size="sm"

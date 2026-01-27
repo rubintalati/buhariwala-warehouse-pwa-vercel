@@ -55,97 +55,109 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-grid-slate-100 bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,black_50%,transparent_100%)]" />
+    <div className="min-h-screen bg-background px-4 py-8 flex flex-col">
+      {/* Mobile-first layout with proper spacing */}
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-sm space-y-8">
 
-      <Card className="w-full max-w-md relative shadow-card-elevated backdrop-blur-sm bg-white/95 border-0">
-        <CardHeader className="text-center pb-8">
-          <div className="mx-auto mb-2">
-            <div className="w-32 h-32 flex items-center justify-center mx-auto">
+          {/* Logo and branding */}
+          <div className="text-center space-y-6">
+            <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center">
               <Image
                 src="/logo.png"
                 alt="Buhariwala Logistics Logo"
-                width={128}
-                height={128}
+                width={64}
+                height={64}
                 className="object-contain"
               />
             </div>
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">Welcome Back</h1>
+              <p className="text-muted-foreground">
+                Sign in to <span className="font-semibold text-primary">Buhariwala Logistics</span>
+              </p>
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">Welcome Back</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Sign in to <span className="font-semibold text-primary">Buhariwala Logistics</span> platform
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground font-medium">Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Enter your username"
-                        className="h-12 bg-white border-2 border-border focus:border-primary transition-colors"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground font-medium">Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        className="h-12 bg-white border-2 border-border focus:border-primary transition-colors"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {form.formState.errors.root && (
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm font-medium text-destructive">
-                  {form.formState.errors.root.message}
-                </div>
-              )}
-              <Button
-                type="submit"
-                className="w-full h-12 button-shine bg-gradient-primary hover:shadow-card-hover transition-all duration-300 font-semibold text-base"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Signing in<span className="loading-dots"></span>
-                  </span>
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
 
-              {/* Additional links */}
-              <div className="text-center pt-4">
-                <p className="text-sm text-muted-foreground">
-                  <a href="#" className="font-medium text-primary hover:text-primary/80 transition-colors">Forgot password?</a>
-                </p>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+          {/* Login form */}
+          <Card className="mobile-card border-0 shadow-lg">
+            <CardContent className="p-6">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Enter your username"
+                            className="mobile-input touch-target"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter your password"
+                            className="mobile-input touch-target"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.formState.errors.root && (
+                    <div className="status-error rounded-lg p-3 text-sm font-medium border">
+                      {form.formState.errors.root.message}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full touch-target bg-[#800E13] text-white hover:bg-[#800E13]/90 font-medium"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Signing in...
+                      </span>
+                    ) : (
+                      'Sign In'
+                    )}
+                  </Button>
+
+                  <div className="text-center pt-2">
+                    <Button variant="ghost" size="sm" className="text-sm text-muted-foreground">
+                      Forgot password?
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+
+          {/* Footer space for mobile */}
+          <div className="text-center text-xs text-muted-foreground">
+            Buhariwala Logistics © 2026
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

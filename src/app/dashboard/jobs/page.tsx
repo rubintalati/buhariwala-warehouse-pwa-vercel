@@ -187,65 +187,68 @@ export default function JobsPage() {
       )}
 
       {/* Header Section with Proper Typography - Match Users Pattern */}
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold text-foreground">Job Management</h1>
+              <p className="text-sm text-muted-foreground">
+                Manage moving and packing jobs, track progress, and coordinate logistics
+              </p>
+            </div>
             <Button
               onClick={() => router.push('/dashboard/jobs/new')}
-              className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary font-semibold px-6"
+              className="bg-[#800E13] text-white hover:bg-[#800E13]/90 font-semibold px-6 w-fit"
             >
               <Plus className="mr-2 h-4 w-4" />
               Create New Job
             </Button>
-            <p className="text-lg text-muted-foreground">
-              Manage moving and packing jobs, track progress, and coordinate logistics
-            </p>
           </div>
 
           {/* Search Bar */}
-          <div className="relative">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="Search jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10 border-0 shadow-sm"
             />
           </div>
-        </div>
 
-        {/* Job Count and Filters */}
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1 w-fit">
-            <FileText className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary whitespace-nowrap">
-              {filteredJobs.length} {statusFilter === 'all' ? 'Jobs' : formatStatusName(statusFilter)}
-            </span>
-          </div>
+          {/* Job Count and Filters */}
+          <div className="flex items-center justify-between gap-4 bg-card p-4 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2 bg-[#800E13]/10 rounded-full px-3 py-2">
+              <FileText className="w-4 h-4 text-[#800E13]" />
+              <span className="text-sm font-medium text-[#800E13] whitespace-nowrap">
+                {filteredJobs.length} {statusFilter === 'all' ? 'Jobs' : formatStatusName(statusFilter)}
+              </span>
+            </div>
 
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <Select value={statusFilter} onValueChange={(value: StatusFilter) => setStatusFilter(value)}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Jobs</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="pending_approval">Pending Approval</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <Select value={statusFilter} onValueChange={(value: StatusFilter) => setStatusFilter(value)}>
+                <SelectTrigger className="w-40 border-0 shadow-sm">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Jobs</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="pending_approval">Pending Approval</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Jobs Grid - Match Users Grid Pattern */}
       {filteredJobs.length === 0 && !isLoading ? (
-        <Card className="border-2 border-dashed border-muted">
-          <CardContent className="flex flex-col items-center justify-center py-12">
+        <Card className="shadow-sm border-0 bg-muted/10">
+          <CardContent className="flex flex-col items-center justify-center py-8">
             <FileText className="w-12 h-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">
               {statusFilter === 'all' ? 'No Jobs Found' : `No ${formatStatusName(statusFilter)} Found`}
@@ -259,7 +262,7 @@ export default function JobsPage() {
             {statusFilter === 'all' && (
               <Button
                 onClick={() => router.push('/dashboard/jobs/new')}
-                className="bg-primary text-white hover:bg-primary/90"
+                className="bg-[#800E13] text-white hover:bg-[#800E13]/90"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Create First Job
@@ -268,20 +271,20 @@ export default function JobsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredJobs.map((job) => (
             <Card
               key={job.id}
-              className="group hover:shadow-card-hover transition-all duration-300 border-border/50 hover:border-border cursor-pointer"
+              className="group hover:shadow-lg transition-all duration-300 border-0 shadow-sm hover:shadow-md bg-white cursor-pointer"
               onClick={() => router.push(`/dashboard/jobs/${job.id}`)}
             >
-              <CardContent className="p-5">
+              <CardContent className="p-4">
                 <div className="flex flex-col space-y-3">
 
                   {/* Job Header with Avatar & Status */}
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
-                      <div className="w-11 h-11 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                      <div className="w-11 h-11 bg-[#800E13] rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                         <span className="text-white font-bold text-sm">
                           {getJobInitials(job)}
                         </span>
@@ -377,7 +380,7 @@ export default function JobsPage() {
                   </div>
 
                   {/* Footer */}
-                  <div className="pt-3 border-t border-border/50">
+                  <div className="pt-3">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">
                         Created {new Date(job.created_at).toLocaleDateString('en-IN', {
@@ -392,7 +395,7 @@ export default function JobsPage() {
                             variant="outline"
                             size="sm"
                             onClick={(e) => generateReport(job.id, e)}
-                            className="h-7 px-2 text-xs border-green-200 text-green-700 hover:bg-green-50"
+                            className="h-7 px-2 text-xs border-0 bg-green-50 text-green-700 hover:bg-green-100 shadow-sm"
                           >
                             <FileOutput className="w-3 h-3 mr-1" />
                             Reports

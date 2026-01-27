@@ -208,7 +208,7 @@ export default function ItemsPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setShowAICapture(false)}>
+          <Button variant="outline" onClick={() => setShowAICapture(false)} className="border-0 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Items
           </Button>
@@ -235,7 +235,7 @@ export default function ItemsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.push(`/dashboard/jobs/${jobId}/rooms`)}>
+          <Button variant="outline" onClick={() => router.push(`/dashboard/jobs/${jobId}/rooms`)} className="border-0 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Rooms
           </Button>
@@ -290,18 +290,18 @@ export default function ItemsPage() {
           items.map((item) => (
             <Card
               key={item.id}
-              className="hover:shadow-card-hover transition-all duration-300"
+              className="border-0 shadow-sm bg-white hover:shadow-lg transition-all duration-300"
             >
-              <CardHeader className="pb-4">
-                <div className="flex justify-between items-start">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <CardTitle className="text-lg font-semibold text-foreground line-clamp-2">
+                    <h3 className="text-lg font-semibold text-foreground line-clamp-2">
                       {item.item_name}
-                    </CardTitle>
-                    <CardDescription className="text-sm">
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
                       {item.category}
                       {item.quantity > 1 && ` • Qty: ${item.quantity}`}
-                    </CardDescription>
+                    </p>
                   </div>
                   {item.fragile && (
                     <div className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-medium">
@@ -309,9 +309,8 @@ export default function ItemsPage() {
                     </div>
                   )}
                 </div>
-              </CardHeader>
 
-              <CardContent className="space-y-4">
+                <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className={`px-2 py-1 rounded-lg text-xs font-medium border ${getConditionColor(item.condition)}`}>
                     {item.condition.toUpperCase()}
@@ -337,11 +336,11 @@ export default function ItemsPage() {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-2 border-t border-border">
+                <div className="flex gap-2 pt-3">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1"
+                    className="flex-1 border-0 shadow-sm hover:shadow-md"
                   >
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
@@ -349,7 +348,7 @@ export default function ItemsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="px-3 text-red-600 hover:text-red-700 hover:bg-red-50 border-0 shadow-sm hover:shadow-md"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -360,6 +359,7 @@ export default function ItemsPage() {
                   {item.image_count && item.image_count > 0 && (
                     <span> • {item.image_count} photos</span>
                   )}
+                </div>
                 </div>
               </CardContent>
             </Card>

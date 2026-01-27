@@ -297,26 +297,29 @@ export default function UsersPage() {
       )}
 
       {/* Header Section with Proper Typography */}
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+              <p className="text-sm text-muted-foreground">
+                Manage system users and their permissions
+              </p>
+            </div>
             <Button
               onClick={() => setShowForm(!showForm)}
-              className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary font-semibold px-6"
+              className="bg-[#800E13] text-white hover:bg-[#800E13]/90 font-semibold px-6 w-fit"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add New User
             </Button>
-            <p className="text-lg text-muted-foreground">
-              Manage system users and their permissions
-            </p>
           </div>
 
           {/* Filter and User Count */}
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 py-1 w-fit">
-              <Users className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary whitespace-nowrap">
+          <div className="flex items-center justify-between gap-4 bg-card p-4 rounded-lg shadow-sm">
+            <div className="flex items-center gap-2 bg-[#800E13]/10 rounded-full px-3 py-2">
+              <Users className="w-4 h-4 text-[#800E13]" />
+              <span className="text-sm font-medium text-[#800E13] whitespace-nowrap">
                 {filteredUsers.length} {roleFilter === 'all' ? 'Users' : formatRoleName(roleFilter)}
               </span>
             </div>
@@ -324,7 +327,7 @@ export default function UsersPage() {
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
               <Select value={roleFilter} onValueChange={(value: RoleFilter) => setRoleFilter(value)}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-40 border-0 shadow-sm">
                   <SelectValue placeholder="Filter by role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -345,7 +348,7 @@ export default function UsersPage() {
 
       {/* Create User Form */}
       {showForm && (
-        <Card className="shadow-card">
+        <Card className="shadow-lg border-0">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-foreground">Create New User</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
@@ -403,16 +406,16 @@ export default function UsersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">Role</label>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring text-sm"
-                  >
-                    <option value="maker">Maker</option>
-                    <option value="checker">Checker</option>
-                    <option value="super_admin">Super Admin</option>
-                  </select>
+                  <Select value={formData.role} onValueChange={(value) => setFormData(prev => ({ ...prev, role: value as 'super_admin' | 'checker' | 'maker' }))}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="maker">Maker</SelectItem>
+                      <SelectItem value="checker">Checker</SelectItem>
+                      <SelectItem value="super_admin">Super Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -427,7 +430,7 @@ export default function UsersPage() {
               </div>
 
               <div className="flex gap-4 pt-2">
-                <Button type="submit" disabled={isCreating} className="font-medium">
+                <Button type="submit" disabled={isCreating} className="bg-[#800E13] text-white hover:bg-[#800E13]/90 font-medium">
                   {isCreating ? 'Creating...' : 'Create User'}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
@@ -441,8 +444,8 @@ export default function UsersPage() {
 
       {/* Users Card Grid */}
       {filteredUsers.length === 0 && !isLoading ? (
-        <Card className="border-2 border-dashed border-muted">
-          <CardContent className="flex flex-col items-center justify-center py-12">
+        <Card className="shadow-sm border-0 bg-muted/10">
+          <CardContent className="flex flex-col items-center justify-center py-8">
             <Users className="w-12 h-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">
               {roleFilter === 'all' ? 'No Users Found' : `No ${formatRoleName(roleFilter)} Found`}
@@ -456,7 +459,7 @@ export default function UsersPage() {
             {roleFilter === 'all' && (
               <Button
                 onClick={() => setShowForm(true)}
-                className="bg-primary text-white hover:bg-primary/90"
+                className="bg-[#800E13] text-white hover:bg-[#800E13]/90"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Create First User
@@ -465,18 +468,18 @@ export default function UsersPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredUsers.map((user) => (
             <Card
               key={user.id}
-              className="group hover:shadow-card-hover transition-all duration-300 border-border/50 hover:border-border"
+              className="group hover:shadow-lg transition-all duration-300 border-0 shadow-sm hover:shadow-md bg-white"
             >
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className="flex flex-col space-y-4">
 
                   {/* User Avatar & Basic Info */}
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 bg-[#800E13] rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
                       <span className="text-white font-bold text-sm">
                         {getUserInitials(user)}
                       </span>
@@ -537,7 +540,7 @@ export default function UsersPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="pt-2 border-t border-border/50 space-y-2">
+                  <div className="pt-3 space-y-2">
                     {/* Edit Button - Always available */}
                     <Button
                       variant="outline"
@@ -650,17 +653,20 @@ export default function UsersPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">Role</label>
-                  <select
-                    name="role"
+                  <Select
                     value={editFormData.role}
-                    onChange={handleEditInputChange}
-                    className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring text-sm"
+                    onValueChange={(value) => setEditFormData(prev => ({ ...prev, role: value as 'super_admin' | 'checker' | 'maker' }))}
                     disabled={editingUser.role === 'super_admin' && !isSuperAdmin(getCurrentUser())}
                   >
-                    <option value="maker">Maker</option>
-                    {isSuperAdmin(getCurrentUser()) && <option value="checker">Checker</option>}
-                    {isSuperAdmin(getCurrentUser()) && <option value="super_admin">Super Admin</option>}
-                  </select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="maker">Maker</SelectItem>
+                      {isSuperAdmin(getCurrentUser()) && <SelectItem value="checker">Checker</SelectItem>}
+                      {isSuperAdmin(getCurrentUser()) && <SelectItem value="super_admin">Super Admin</SelectItem>}
+                    </SelectContent>
+                  </Select>
                   {editingUser.role === 'super_admin' && !isSuperAdmin(getCurrentUser()) && (
                     <p className="text-xs text-muted-foreground mt-1">
                       You cannot change the role of a Super Admin
@@ -679,7 +685,7 @@ export default function UsersPage() {
               </div>
 
               <div className="flex gap-4 pt-4 border-t">
-                <Button type="submit" disabled={isUpdating} className="font-medium flex-1">
+                <Button type="submit" disabled={isUpdating} className="bg-[#800E13] text-white hover:bg-[#800E13]/90 font-medium flex-1">
                   {isUpdating ? 'Updating...' : 'Update User'}
                 </Button>
                 <Button type="button" variant="outline" onClick={closeEditModal} className="flex-1">

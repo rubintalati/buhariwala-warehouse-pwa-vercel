@@ -296,7 +296,7 @@ export default function NewJobPage() {
           variant="outline"
           onClick={() => router.back()}
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 border-0 shadow-sm hover:shadow-md"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
@@ -341,14 +341,13 @@ export default function NewJobPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Client Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5 text-primary" />
+        <Card className="border-0 shadow-sm bg-white">
+          <CardContent className="p-4">
+            <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+              <User className="w-5 h-5 text-[#800E13]" />
               Client Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            </h3>
+            <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Client Name *</label>
@@ -388,18 +387,19 @@ export default function NewJobPage() {
                 placeholder="Enter email address (optional)"
               />
             </div>
+            </div>
           </CardContent>
         </Card>
 
 
         {/* Location Management */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
+        <Card className="border-0 shadow-sm bg-white">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="flex items-center gap-2 text-lg font-semibold">
+                <MapPin className="w-5 h-5 text-[#800E13]" />
                 {isAdvancedMode ? 'Location Management' : 'Pickup & Delivery Locations'}
-              </CardTitle>
+              </h3>
 
               {isAdvancedMode && (
                 <div className="flex flex-col gap-2">
@@ -408,7 +408,7 @@ export default function NewJobPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => addLocation('pickup')}
-                    className="justify-start"
+                    className="justify-start border-0 shadow-sm hover:shadow-md"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Add Pickup
@@ -418,7 +418,7 @@ export default function NewJobPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => addLocation('delivery')}
-                    className="justify-start"
+                    className="justify-start border-0 shadow-sm hover:shadow-md"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Add Delivery
@@ -426,9 +426,7 @@ export default function NewJobPage() {
                 </div>
               )}
             </div>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
+            <div className="space-y-6">
             {locations.map((location, index) => (
               <LocationInput
                 key={location.id}
@@ -440,6 +438,7 @@ export default function NewJobPage() {
                 isLast={index === locations.length - 1}
               />
             ))}
+            </div>
           </CardContent>
         </Card>
 
@@ -456,17 +455,15 @@ export default function NewJobPage() {
         />
 
         {/* Additional Notes */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Additional Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-0 shadow-sm bg-white">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-4">Additional Notes</h3>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Enter any special instructions, fragile items, access requirements, etc."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border-0 shadow-sm rounded-md focus:outline-none focus:ring-2 focus:ring-[#800E13] bg-background"
             />
           </CardContent>
         </Card>
@@ -477,7 +474,7 @@ export default function NewJobPage() {
           <Button
             type="submit"
             disabled={isCreating}
-            className="bg-gradient-to-r from-red-800 to-red-700 hover:from-red-900 hover:to-red-800 font-semibold px-8"
+            className="bg-[#800E13] text-white hover:bg-[#800E13]/90 font-semibold px-8"
             onClick={() => setSubmitType('draft')}
           >
             <Save className="mr-2 h-4 w-4" />
@@ -489,6 +486,7 @@ export default function NewJobPage() {
             variant="outline"
             onClick={() => router.back()}
             disabled={isCreating}
+            className="border-0 shadow-sm hover:shadow-md"
           >
             Cancel
           </Button>

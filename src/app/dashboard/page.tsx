@@ -97,43 +97,43 @@ export default function DashboardPage() {
       {/* Primary Action Cards */}
       <div className="grid grid-cols-2 gap-4">
         <Card
-          className="group hover:shadow-card-hover transition-all duration-300 cursor-pointer"
+          className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm bg-white"
           onClick={() => router.push('/dashboard/jobs/new')}
         >
-          <CardContent className="p-3">
+          <CardContent className="p-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-7 h-7 bg-[#800E13] rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Plus className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="text-sm font-medium text-primary">Create New Job</span>
+              <span className="text-sm font-medium text-[#800E13]">Create New Job</span>
             </div>
           </CardContent>
         </Card>
 
         <Card
-          className="group hover:shadow-card-hover transition-all duration-300 cursor-pointer"
+          className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm bg-white"
           onClick={() => router.push('/dashboard/users')}
         >
-          <CardContent className="p-3">
+          <CardContent className="p-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 bg-slate-500 rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-7 h-7 bg-[#800E13] rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Users className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="text-sm font-medium text-slate-600">Manage Users</span>
+              <span className="text-sm font-medium text-[#800E13]">Manage Users</span>
             </div>
           </CardContent>
         </Card>
 
         <Card
-          className="group hover:shadow-card-hover transition-all duration-300 cursor-pointer"
+          className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm bg-white"
           onClick={() => {/* Add analytics route when implemented */}}
         >
-          <CardContent className="p-3">
+          <CardContent className="p-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 bg-accent rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-7 h-7 bg-[#800E13] rounded-md flex items-center justify-center group-hover:scale-110 transition-transform">
                 <BarChart3 className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="text-sm font-medium text-accent">Analytics</span>
+              <span className="text-sm font-medium text-[#800E13]">Analytics</span>
             </div>
           </CardContent>
         </Card>
@@ -164,8 +164,8 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : recentJobs.length === 0 ? (
-          <Card className="border-2 border-dashed border-muted">
-            <CardContent className="flex flex-col items-center justify-center py-12">
+          <Card className="shadow-sm border-0 bg-muted/10">
+            <CardContent className="flex flex-col items-center justify-center py-8">
               <FileText className="w-12 h-12 text-muted-foreground mb-4" />
               <h3 className="text-base font-semibold text-foreground mb-2">No Jobs Found</h3>
               <p className="text-xs text-muted-foreground mb-6 text-center max-w-sm">
@@ -173,7 +173,7 @@ export default function DashboardPage() {
               </p>
               <Button
                 onClick={() => router.push('/dashboard/jobs/new')}
-                className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary"
+                className="bg-[#800E13] text-white hover:bg-[#800E13]/90"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Create First Job
@@ -181,58 +181,63 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {recentJobs.map((job) => (
               <Card
                 key={job.id}
-                className="group hover:shadow-card-hover transition-all duration-300 cursor-pointer border-border/50 hover:border-border"
+                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm bg-white"
                 onClick={() => router.push(`/dashboard/jobs/${job.id}`)}
               >
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-base font-semibold text-foreground">
-                        {job.job_number}
-                      </CardTitle>
-                      <CardDescription className="font-medium text-foreground">
-                        {job.client_name}
-                      </CardDescription>
-                    </div>
-                    <div className={`px-2 py-1 rounded-lg text-xs font-medium border ${getStatusColor(job.status)}`}>
-                      {formatStatusName(job.status)}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium text-foreground">Pickup</p>
-                        <p className="text-xs text-muted-foreground truncate">{job.pickup_address}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium text-foreground">Delivery</p>
-                        <p className="text-xs text-muted-foreground truncate">{job.delivery_address}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-secondary" />
+                <CardContent className="p-4">
+                  <div className="flex flex-col space-y-3">
+                    {/* Job Header */}
+                    <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-xs font-medium text-foreground">Pickup Date</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(job.pickup_date).toLocaleDateString()}
+                        <h3 className="text-base font-semibold text-foreground">
+                          {job.job_number}
+                        </h3>
+                        <p className="font-medium text-foreground">
+                          {job.client_name}
                         </p>
                       </div>
+                      <div className={`px-2 py-1 rounded-lg text-xs font-medium border ${getStatusColor(job.status)}`}>
+                        {formatStatusName(job.status)}
+                      </div>
                     </div>
-                  </div>
-                  <div className="pt-4 border-t border-border">
-                    <p className="text-[10px] text-muted-foreground">
-                      Created {new Date(job.created_at).toLocaleDateString()}
-                    </p>
+
+                    {/* Location Info */}
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-foreground">Pickup</p>
+                          <p className="text-xs text-muted-foreground truncate">{job.pickup_address}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <MapPin className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-foreground">Delivery</p>
+                          <p className="text-xs text-muted-foreground truncate">{job.delivery_address}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-4 h-4 text-secondary" />
+                        <div>
+                          <p className="text-xs font-medium text-foreground">Pickup Date</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(job.pickup_date).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="pt-3">
+                      <p className="text-[10px] text-muted-foreground">
+                        Created {new Date(job.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -242,11 +247,9 @@ export default function DashboardPage() {
       </div>
 
       {/* System Health Section */}
-      <Card className="shadow-card hover:shadow-card-hover transition-shadow">
-        <CardHeader>
-          <CardTitle className="text-base">System Health</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="border-0 shadow-sm hover:shadow-md transition-shadow bg-white">
+        <CardContent className="p-4">
+          <h3 className="text-base font-semibold mb-4">System Health</h3>
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Server Status</span>

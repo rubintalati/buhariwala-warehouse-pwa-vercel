@@ -206,24 +206,23 @@ export default function ApprovalsPage() {
           jobs.map((job) => (
             <Card
               key={job.id}
-              className="hover:shadow-card-hover transition-all duration-300"
+              className="border-0 shadow-sm bg-white hover:shadow-lg transition-all duration-300"
             >
-              <CardHeader className="pb-4">
-                <div className="flex justify-between items-start">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-4">
                   <div>
-                    <CardTitle className="text-lg font-semibold text-foreground">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {job.job_number}
-                    </CardTitle>
-                    <CardDescription className="font-medium text-foreground">
+                    </h3>
+                    <p className="font-medium text-foreground">
                       {job.client_name}
-                    </CardDescription>
+                    </p>
                   </div>
                   <div className={`px-2 py-1 rounded-lg text-xs font-medium border ${getStatusColor(job.status)}`}>
                     {job.status.replace('_', ' ').toUpperCase()}
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                <div className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
@@ -257,12 +256,12 @@ export default function ApprovalsPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-border space-y-2">
+                <div className="pt-4 space-y-2">
                   <div className="flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1"
+                      className="flex-1 border-0 shadow-sm hover:shadow-md"
                       onClick={() => router.push(`/dashboard/jobs/${job.id}`)}
                     >
                       <Eye className="w-4 h-4 mr-2" />
@@ -282,7 +281,7 @@ export default function ApprovalsPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                      className="flex-1 border-0 shadow-sm text-red-600 hover:bg-red-50 hover:shadow-md"
                       onClick={() => {
                         setSelectedJob(job)
                         setShowRejectModal(true)
@@ -294,6 +293,7 @@ export default function ApprovalsPage() {
                     </Button>
                   </div>
                 </div>
+                </div>
               </CardContent>
             </Card>
           ))
@@ -303,14 +303,13 @@ export default function ApprovalsPage() {
       {/* Rejection Modal */}
       {showRejectModal && selectedJob && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle>Reject Job</CardTitle>
-              <CardDescription>
+          <Card className="w-full max-w-md border-0 shadow-lg bg-white">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-2">Reject Job</h3>
+              <p className="text-sm text-muted-foreground mb-4">
                 Please provide a reason for rejecting {selectedJob.job_number}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </p>
+              <div className="space-y-4">
               <Textarea
                 placeholder="Enter rejection reason..."
                 value={rejectionReason}
@@ -325,7 +324,7 @@ export default function ApprovalsPage() {
                     setRejectionReason('')
                     setSelectedJob(null)
                   }}
-                  className="flex-1"
+                  className="flex-1 border-0 shadow-sm hover:shadow-md"
                   disabled={isProcessing}
                 >
                   Cancel
@@ -337,6 +336,7 @@ export default function ApprovalsPage() {
                 >
                   {isProcessing ? 'Rejecting...' : 'Reject Job'}
                 </Button>
+              </div>
               </div>
             </CardContent>
           </Card>

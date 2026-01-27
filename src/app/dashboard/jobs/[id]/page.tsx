@@ -228,7 +228,7 @@ export default function JobDetailsPage() {
     return (
       <div className="space-y-8">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" onClick={() => router.back()} className="border-0 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
@@ -250,7 +250,7 @@ export default function JobDetailsPage() {
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-0 shadow-sm hover:shadow-md"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -269,8 +269,8 @@ export default function JobDetailsPage() {
         </div>
 
         {/* Action Buttons - Matching Create Job Page Style */}
-        <Card>
-          <CardContent className="p-6">
+        <Card className="border-0 shadow-sm bg-white">
+          <CardContent className="p-4">
             <div className="flex flex-col gap-4">
               <h3 className="text-lg font-semibold text-foreground">Actions</h3>
               <div className="flex flex-wrap gap-3">
@@ -280,7 +280,7 @@ export default function JobDetailsPage() {
                     <Button
                       variant="outline"
                       onClick={() => router.push(`/dashboard/jobs/${job.id}/edit`)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 border-0 shadow-sm hover:shadow-md"
                     >
                       <Edit className="w-4 h-4" />
                       Edit Job
@@ -288,7 +288,7 @@ export default function JobDetailsPage() {
                     {job.total_items && job.total_items > 0 && (
                       <Button
                         onClick={submitForApproval}
-                        className="bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-white flex items-center gap-2"
+                        className="bg-[#800E13] text-white hover:bg-[#800E13]/90 flex items-center gap-2"
                       >
                         <Send className="w-4 h-4" />
                         Submit for Approval
@@ -310,7 +310,7 @@ export default function JobDetailsPage() {
                     <Button
                       onClick={() => rejectJob()}
                       variant="outline"
-                      className="border-red-300 text-red-600 hover:bg-red-50 flex items-center gap-2"
+                      className="border-0 shadow-sm text-red-600 hover:bg-red-50 hover:shadow-md flex items-center gap-2"
                     >
                       <X className="w-4 h-4" />
                       Reject
@@ -342,14 +342,12 @@ export default function JobDetailsPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Client Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-500" />
+          <Card className="border-0 shadow-sm bg-white">
+            <CardContent className="p-4">
+              <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                <User className="w-5 h-5 text-[#800E13]" />
                 Client Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Name</p>
@@ -376,14 +374,13 @@ export default function JobDetailsPage() {
           </Card>
 
           {/* Location Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
+          <Card className="border-0 shadow-sm bg-white">
+            <CardContent className="p-4">
+              <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                <MapPin className="w-5 h-5 text-[#800E13]" />
                 Location Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </h3>
+              <div className="space-y-6">
               {/* Pickup Locations */}
               {job.pickup_locations && job.pickup_locations.length > 0 && (
                 <div>
@@ -463,12 +460,12 @@ export default function JobDetailsPage() {
                         )}
 
                         {/* Location-specific Item Management Button */}
-                        <div className="mt-3 pt-3 border-t border-green-200">
+                        <div className="mt-3 pt-3">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => router.push(`/dashboard/jobs/${job.id}/items?delivery_id=${index + 1}`)}
-                            className="text-green-700 border-green-300 hover:bg-green-100 text-xs"
+                            className="text-green-700 border-0 shadow-sm hover:bg-green-100 hover:shadow-md text-xs"
                           >
                             <Package className="w-3 h-3 mr-1" />
                             Manage Items ({location.item_count || 0})
@@ -497,18 +494,18 @@ export default function JobDetailsPage() {
                   </div>
                 </>
               )}
+              </div>
             </CardContent>
           </Card>
 
           {/* Schedule */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-purple-500" />
+          <Card className="border-0 shadow-sm bg-white">
+            <CardContent className="p-4">
+              <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                <Calendar className="w-5 h-5 text-[#800E13]" />
                 Schedule
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </h3>
+              <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Pickup Date</p>
@@ -535,19 +532,18 @@ export default function JobDetailsPage() {
                   </div>
                 )}
               </div>
+              </div>
             </CardContent>
           </Card>
 
           {/* Notes */}
           {job.notes && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-gray-500" />
+            <Card className="border-0 shadow-sm bg-white">
+              <CardContent className="p-4">
+                <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
+                  <FileText className="w-5 h-5 text-[#800E13]" />
                   Notes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </h3>
                 <p className="whitespace-pre-wrap">{job.notes}</p>
               </CardContent>
             </Card>
@@ -558,15 +554,14 @@ export default function JobDetailsPage() {
         <div className="space-y-6">
           {/* Quick Actions - Hide for completed jobs */}
           {job.status !== 'completed' && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
+            <Card className="border-0 shadow-sm bg-white">
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+                <div className="space-y-3">
                 {/* General Item Management - for single delivery or overall view */}
                 <Button
                   variant="outline"
-                  className="w-full justify-start"
+                  className="w-full justify-start border-0 shadow-sm hover:shadow-md"
                   onClick={() => router.push(`/dashboard/jobs/${job.id}/items`)}
                 >
                   <Package className="w-4 h-4 mr-2" />
@@ -574,21 +569,21 @@ export default function JobDetailsPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start"
+                  className="w-full justify-start border-0 shadow-sm hover:shadow-md"
                 >
                   <Camera className="w-4 h-4 mr-2" />
                   Add Photos
                 </Button>
+                </div>
               </CardContent>
             </Card>
           )}
 
           {/* Job Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <Card className="border-0 shadow-sm bg-white">
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-4">Job Summary</h3>
+              <div className="space-y-4">
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Total Items</span>
@@ -610,7 +605,7 @@ export default function JobDetailsPage() {
                 )}
               </div>
 
-              <div className="pt-4 border-t border-border">
+              <div className="pt-4">
                 <p className="text-xs text-muted-foreground mb-2">Created</p>
                 <p className="text-sm font-semibold text-foreground">
                   {new Date(job.created_at).toLocaleDateString('en-IN', {
@@ -624,6 +619,7 @@ export default function JobDetailsPage() {
                     by {job.created_by}
                   </p>
                 )}
+              </div>
               </div>
             </CardContent>
           </Card>

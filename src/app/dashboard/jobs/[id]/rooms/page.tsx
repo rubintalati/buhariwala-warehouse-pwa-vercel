@@ -185,7 +185,7 @@ export default function RoomsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" onClick={() => router.back()} className="border-0 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Job
           </Button>
@@ -215,14 +215,12 @@ export default function RoomsPage() {
 
       {/* Create Room Form */}
       {showForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Add New Room</CardTitle>
-            <CardDescription>
+        <Card className="border-0 shadow-sm bg-white">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-2">Add New Room</h3>
+            <p className="text-sm text-muted-foreground mb-4">
               Create a room to start cataloguing items for this job
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -269,7 +267,7 @@ export default function RoomsPage() {
                 <Button type="submit" disabled={isCreating}>
                   {isCreating ? 'Creating Room...' : 'Create Room'}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)} className="border-0 shadow-sm hover:shadow-md">
                   Cancel
                 </Button>
               </div>
@@ -303,22 +301,22 @@ export default function RoomsPage() {
           rooms.map((room) => (
             <Card
               key={room.id}
-              className="hover:shadow-card-hover transition-all duration-300 cursor-pointer"
+              className="border-0 shadow-sm bg-white hover:shadow-lg transition-all duration-300 cursor-pointer"
             >
-              <CardHeader className="pb-4">
-                <div className="flex justify-between items-start">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl flex items-center justify-center text-2xl">
                       {getRoomIcon(room.room_type)}
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-foreground">
+                      <h3 className="text-lg font-semibold text-foreground">
                         {room.room_name}
-                      </CardTitle>
-                      <CardDescription className="text-sm">
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
                         {getRoomLabel(room.room_type)}
                         {room.floor_level && ` • Floor ${room.floor_level}`}
-                      </CardDescription>
+                      </p>
                     </div>
                   </div>
                   {room.is_completed && (
@@ -327,9 +325,8 @@ export default function RoomsPage() {
                     </div>
                   )}
                 </div>
-              </CardHeader>
 
-              <CardContent className="space-y-4">
+                <div className="space-y-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Package className="w-4 h-4" />
                   <span>{room.item_count || 0} items catalogued</span>
@@ -346,14 +343,15 @@ export default function RoomsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="px-3"
+                    className="px-3 border-0 shadow-sm hover:shadow-md"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
                 </div>
 
-                <div className="pt-2 border-t border-border text-xs text-muted-foreground">
+                <div className="pt-3 text-xs text-muted-foreground">
                   Created {new Date(room.created_at).toLocaleDateString()}
+                </div>
                 </div>
               </CardContent>
             </Card>

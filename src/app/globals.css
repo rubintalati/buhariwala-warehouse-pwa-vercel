@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -138,181 +139,42 @@
 }
 
 @layer components {
-  /* Gradient backgrounds for modern look */
-  .bg-gradient-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  /* Mobile-first touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
   }
 
-  .bg-gradient-secondary {
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--warning) 100%);
-  }
-
-  .bg-gradient-subtle {
-    background: linear-gradient(135deg, var(--background) 0%, var(--muted) 100%);
-  }
-
-  /* Professional card shadows */
-  .shadow-card {
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  }
-
-  .shadow-card-hover {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  }
-
-  .shadow-card-elevated {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  }
-
-  /* Modern button animations */
-  .button-shine {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .button-shine::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-
-  .button-shine:hover::before {
-    left: 100%;
-  }
-
-  /* Professional loading animations */
-  .loading-dots {
-    display: inline-block;
-  }
-
-  .loading-dots::after {
-    content: '';
-    animation: loading-dots 1.5s infinite;
-  }
-
-  @keyframes loading-dots {
-    0%, 20% { content: '.'; }
-    40% { content: '..'; }
-    60% { content: '...'; }
-    80%, 100% { content: ''; }
-  }
-
-  /* Logistics-specific utility classes */
+  /* Status indicators using standard classes */
   .status-success {
-    @apply bg-green-500/10 text-green-500 border-green-500/20;
+    @apply bg-green-50 text-green-700 border-green-200;
   }
 
   .status-warning {
-    @apply bg-yellow-500/10 text-yellow-500 border-yellow-500/20;
+    @apply bg-yellow-50 text-yellow-700 border-yellow-200;
   }
 
   .status-error {
-    @apply bg-red-500/10 text-red-500 border-red-500/20;
+    @apply bg-red-50 text-red-700 border-red-200;
   }
 
   .status-pending {
-    @apply bg-blue-500/10 text-blue-500 border-blue-500/20;
+    @apply bg-blue-50 text-blue-700 border-blue-200;
   }
 
-  /* Splash Screen Animations */
-  .animate-bounceIn {
-    animation: bounceIn 1.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+  /* Mobile-optimized card spacing */
+  .mobile-card {
+    @apply p-4 rounded-lg border bg-card text-card-foreground shadow-sm;
   }
 
-  .animate-slideInUp {
-    animation: slideInUp 1s ease-out;
+  /* Touch-friendly form controls */
+  .mobile-input {
+    @apply h-12 px-4 rounded-md border border-input bg-background text-sm ring-offset-background;
   }
 
-  .animate-fadeIn {
-    animation: fadeIn 1s ease-out;
-  }
-
-  .animate-fadeOut {
-    animation: fadeOut 1s ease-in;
-  }
-
-  @keyframes bounceIn {
-    from,
-    20%,
-    40%,
-    60%,
-    80%,
-    to {
-      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-    }
-
-    0% {
-      opacity: 0;
-      transform: scale3d(0.3, 0.3, 0.3);
-    }
-
-    20% {
-      transform: scale3d(1.1, 1.1, 1.1);
-    }
-
-    40% {
-      transform: scale3d(0.9, 0.9, 0.9);
-    }
-
-    60% {
-      opacity: 1;
-      transform: scale3d(1.03, 1.03, 1.03);
-    }
-
-    80% {
-      transform: scale3d(0.97, 0.97, 0.97);
-    }
-
-    to {
-      opacity: 1;
-      transform: scale3d(1, 1, 1);
-    }
-  }
-
-  @keyframes slideInUp {
-    from {
-      transform: translate3d(0, 100%, 0);
-      opacity: 0;
-    }
-
-    to {
-      transform: translate3d(0, 0, 0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
-
-    to {
-      opacity: 0;
-    }
-  }
-
-  /* Performance optimizations for splash screen animations */
-  .animate-bounceIn,
-  .animate-slideInUp,
-  .animate-fadeIn,
-  .animate-fadeOut {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: transform, opacity;
+  /* Mobile navigation */
+  .mobile-nav-item {
+    @apply flex items-center gap-3 p-4 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground;
   }
 }
+

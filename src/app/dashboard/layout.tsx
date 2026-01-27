@@ -5,7 +5,24 @@ import { useRouter, usePathname } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { getCurrentUser, signOut, type AuthUser } from '@/lib/custom-auth'
-import { Menu, X, Home, FileText, Users, Settings, LogOut, CheckCircle } from 'lucide-react'
+import {
+  Home,
+  FileText,
+  Users,
+  Settings,
+  LogOut,
+  CheckCircle,
+  Menu,
+  Plus
+} from 'lucide-react'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -13,7 +30,6 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [jobCounts, setJobCounts] = useState({ pending: 0, inProgress: 0 })
   const router = useRouter()
@@ -76,15 +92,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative w-16 h-16">
             <div className="w-16 h-16 border-4 border-muted rounded-full"></div>
             <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin absolute top-0"></div>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <h2 className="text-lg font-semibold text-foreground">Loading Dashboard</h2>
-            <p className="text-sm text-muted-foreground">Please wait while we prepare your workspace</p>
+          <div className="text-center space-y-2">
+            <h2 className="text-lg font-semibold">Loading Dashboard</h2>
+            <p className="text-sm text-muted-foreground">Preparing your workspace...</p>
           </div>
         </div>
       </div>
@@ -166,139 +182,124 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Mobile sidebar backdrop */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+    <div className="min-h-screen bg-background">
+      {/* Mobile Header */}
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+        <div className="flex items-center justify-between p-4">
+          {/* Left: Navigation Menu */}
+          <div className="flex items-center gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="touch-target p-2">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 bg-[#800E13] text-white border-r-0 p-0">
+                <SheetHeader className="border-b border-white/20 p-6 pb-4">
+                  <SheetTitle className="flex flex-col items-center gap-3 text-white text-center">
+                    <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center">
+                      <Image
+                        src="/logo.png"
+                        alt="Buhariwala Logo"
+                        width={80}
+                        height={80}
+                        className="object-contain"
+                      />
+                    </div>
+                    <span className="text-lg font-semibold">Buhariwala Logistics</span>
+                  </SheetTitle>
+                </SheetHeader>
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-sidebar shadow-card-elevated transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
-        {/* Sidebar Header */}
-        <div className="flex h-20 items-center justify-between px-6 border-b border-sidebar-border">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg p-1">
-              <Image
-                src="/logo.png"
-                alt="Buhariwala Logistics Logo"
-                width={32}
-                height={32}
-                className="object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-sidebar-foreground">Buhariwala</h1>
-              <p className="text-xs text-sidebar-foreground/70">Logistics Platform</p>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="lg:hidden text-sidebar-foreground hover:bg-sidebar-accent"
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-        {/* Navigation */}
-        <nav className="mt-8 px-4">
-          <div className="space-y-2">
-            {filteredNavigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="group flex items-center px-4 py-3 text-sm font-medium text-sidebar-foreground/80 rounded-xl hover:bg-sidebar-primary hover:text-sidebar-primary-foreground transition-all duration-200 hover:shadow-lg"
-              >
-                <div className="mr-3 p-1.5 rounded-lg bg-sidebar-accent/20 group-hover:bg-white/20 transition-colors">
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <span className="font-semibold">{item.name}</span>
-              </a>
-            ))}
-          </div>
+                <div className="flex flex-col h-full p-6 pt-4">
+                  {/* User Profile Section */}
+                  <div className="bg-white/10 rounded-lg border border-white/20 mb-6">
+                    <div className="p-4">
+                      <p className="font-medium text-sm text-white">
+                        {user.full_name || user.email}
+                      </p>
+                      <p className="text-xs text-white/70 capitalize">
+                        {user.role?.replace('_', ' ')}
+                      </p>
+                    </div>
+                  </div>
 
-          {/* Quick Stats */}
-          <div className="mt-8 px-4 py-4 bg-sidebar-accent/10 rounded-xl border border-sidebar-border/50">
-            <h3 className="text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wide mb-3">
-              Quick Stats
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-sidebar-foreground/70">In Progress</span>
-                <span className="font-bold text-sidebar-foreground">{jobCounts.inProgress}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-sidebar-foreground/70">Pending</span>
-                <span className="font-bold text-sidebar-foreground">{jobCounts.pending}</span>
-              </div>
-            </div>
-          </div>
-        </nav>
-        {/* User Section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="bg-sidebar-accent/20 rounded-xl p-4 border border-sidebar-border/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-sm">
-                  {(user.full_name || user.email || 'U').charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-sidebar-foreground truncate">
-                  {user.full_name || user.email}
-                </p>
-                <p className="text-xs text-sidebar-foreground/70 capitalize">
-                  {user.role?.replace('_', ' ')}
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-primary/20 p-2 rounded-lg"
-                title="Sign Out"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+                  {/* Quick Stats */}
+                  <div className="bg-white/10 rounded-lg border border-white/20 mb-6">
+                    <div className="p-4">
+                      <h3 className="font-medium text-sm mb-3 text-white">Quick Stats</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-white">{jobCounts.inProgress}</div>
+                          <div className="text-xs text-white/70">In Progress</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-orange-300">{jobCounts.pending}</div>
+                          <div className="text-xs text-white/70">Pending</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-      {/* Main content */}
-      <div className="lg:pl-72">
-        {/* Top bar */}
-        <div className="sticky top-0 z-10 backdrop-blur-md bg-white/80 border-b border-border shadow-sm">
-          <div className="flex h-16 items-center px-4 lg:px-8">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden mr-4 hover:bg-muted"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-            <div className="flex flex-1 justify-between items-center">
-              <div className="flex items-center gap-4">
-                <h2 className="text-xl font-bold text-foreground">
-                  {getCurrentPageTitle()}
-                </h2>
-                <div className="hidden sm:block">
-                  <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs font-medium text-green-500">System Online</span>
+                  {/* Navigation Menu */}
+                  <nav className="space-y-1">
+                    {filteredNavigation.map((item) => (
+                      <SheetClose key={item.name} asChild>
+                        <a
+                          href={item.href}
+                          className={`flex items-center gap-3 p-3 text-sm font-medium transition-colors rounded-lg ${
+                            pathname === item.href
+                              ? 'bg-white text-[#800E13]'
+                              : 'text-white hover:bg-white/10'
+                          }`}
+                        >
+                          <item.icon className="h-5 w-5" />
+                          <span>{item.name}</span>
+                        </a>
+                      </SheetClose>
+                    ))}
+                  </nav>
+
+                  {/* Sign Out */}
+                  <div className="pt-4 border-t border-white/20 mt-6">
+                    <SheetClose asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={handleSignOut}
+                        className="w-full justify-start flex items-center gap-3 p-3 text-sm font-medium text-white hover:bg-white/10 rounded-lg"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Sign Out
+                      </Button>
+                    </SheetClose>
                   </div>
                 </div>
-              </div>
+              </SheetContent>
+            </Sheet>
+
+            {/* Title Only */}
+            <div className="flex items-center">
+              <h1 className="font-semibold text-lg truncate">
+                {getCurrentPageTitle()}
+              </h1>
             </div>
           </div>
-        </div>
 
-        {/* Page content */}
-        <main className="p-4 lg:p-8 min-h-[calc(100vh-4rem)]">{children}</main>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="p-4">
+        {children}
+      </main>
+
+      {/* Quick Action Button (FAB) */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <Button
+          className="w-14 h-14 rounded-full shadow-lg touch-target bg-primary text-white hover:bg-primary/90"
+          onClick={() => router.push('/dashboard/jobs/new')}
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       </div>
     </div>
   )

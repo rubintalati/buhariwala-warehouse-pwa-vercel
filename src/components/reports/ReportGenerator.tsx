@@ -131,9 +131,30 @@ export default function ReportGenerator({ job, items, currentUser }: ReportGener
       setGenerationStatus('success')
 
       // If email was requested, handle email sending
-      if (includeEmail && emailForm.recipients) {
-        // TODO: Implement email sending
-        console.log('Email sending will be implemented in the next phase')
+      if (includeEmail && emailForm.recipients && emailForm.recipients.trim()) {
+        try {
+          const emailResponse = await fetch('/api/reports/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              reportData: reportData,
+              emailConfig: {
+                recipients: emailForm.recipients.split(',').map(email => email.trim()),
+                subject: emailForm.subject || `${reportTypeName} - ${job.job_number}`,
+                message: emailForm.message || `Please find the attached ${reportTypeName.toLowerCase()} for job ${job.job_number}.`
+              }
+            })
+          })
+
+          if (emailResponse.ok) {
+            const emailResult = await emailResponse.json()
+            console.log('Email sent successfully:', emailResult)
+          } else {
+            console.error('Email sending failed:', await emailResponse.text())
+          }
+        } catch (error) {
+          console.error('Error sending email:', error)
+        }
       }
 
       // Auto-close after success

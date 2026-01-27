@@ -67,10 +67,17 @@ export default function AIItemIdentifier({
         formData.append('image', file)
         formData.append('roomType', roomType)
 
+        // Add timeout to prevent hanging
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
+
         const response = await fetch('/api/ai/identify-item', {
           method: 'POST',
           body: formData,
+          signal: controller.signal
         })
+
+        clearTimeout(timeoutId)
 
         const result = await response.json()
 
@@ -84,7 +91,18 @@ export default function AIItemIdentifier({
         setStep('review')
       } catch (error) {
         console.error('Error identifying item:', error)
-        setError(error instanceof Error ? error.message : 'Failed to identify item')
+
+        let errorMessage = 'Failed to identify item'
+
+        if (error instanceof Error) {
+          if (error.name === 'AbortError') {
+            errorMessage = 'Request timed out. The AI service may be overloaded. Please try again.'
+          } else {
+            errorMessage = error.message
+          }
+        }
+
+        setError(errorMessage)
         setStep('camera')
       } finally {
         setIsAnalyzing(false)
@@ -96,6 +114,18 @@ export default function AIItemIdentifier({
   }
 
   const handleMultiplePhotosProcess = async (files: File[], imageDatas: string[]) => {
+    console.log('handleMultiplePhotosProcess called with:', { filesCount: files?.length, imageDataCount: imageDatas?.length })
+
+    if (!files || files.length === 0) {
+      setError('No images provided for processing')
+      return
+    }
+
+    if (!imageDatas || imageDatas.length === 0) {
+      setError('No image data provided for processing')
+      return
+    }
+
     setStep('analyzing')
     setIsAnalyzing(true)
     setError('')
@@ -107,10 +137,17 @@ export default function AIItemIdentifier({
       })
       formData.append('roomType', roomType)
 
+      // Add timeout to prevent hanging
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
+
       const response = await fetch('/api/ai/identify-item', {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       })
+
+      clearTimeout(timeoutId)
 
       const result = await response.json()
 
@@ -127,7 +164,18 @@ export default function AIItemIdentifier({
       setStep('review')
     } catch (error) {
       console.error('Error identifying items:', error)
-      setError(error instanceof Error ? error.message : 'Failed to identify items')
+
+      let errorMessage = 'Failed to identify items'
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timed out. The AI service may be overloaded. Please try again.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+
+      setError(errorMessage)
       setStep('camera')
     } finally {
       setIsAnalyzing(false)
@@ -202,10 +250,16 @@ export default function AIItemIdentifier({
     return (
       <CameraCapture
         onCapture={handleImageCapture}
+        onMultipleCapture={handleMultiplePhotosProcess}
         onCancel={onCancel}
         disabled={disabled}
-        title="AI Item Identification"
-        description={`Take a photo and let AI identify the item${roomType !== 'general' ? ` in your ${roomType}` : ''}`}
+        allowMultiple={allowMultiplePhotos}
+        maxFiles={5}
+        title={allowMultiplePhotos ? "AI Multi-Item Identification" : "AI Item Identification"}
+        description={allowMultiplePhotos
+          ? `Take multiple photos or upload images to identify several items at once${roomType !== 'general' ? ` in your ${roomType}` : ''}`
+          : `Take a photo and let AI identify the item${roomType !== 'general' ? ` in your ${roomType}` : ''}`
+        }
       />
     )
   }
@@ -216,34 +270,79 @@ export default function AIItemIdentifier({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-            Analyzing Item
+            Analyzing {allowMultiplePhotos && imageDatas.length > 1 ? 'Items' : 'Item'}
           </CardTitle>
           <CardDescription>
-            AI is analyzing your photo to identify the item...
+            AI is analyzing your {allowMultiplePhotos && imageDatas.length > 1 ? `${imageDatas.length} photos` : 'photo'} to identify the item{allowMultiplePhotos && imageDatas.length > 1 ? 's' : ''}...
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {imageData && (
-            <img
-              src={imageData}
-              alt="Item being analyzed"
-              className="w-full h-auto max-h-64 object-cover rounded-lg border"
-            />
+          {allowMultiplePhotos && imageDatas.length > 1 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {imageDatas.slice(0, 4).map((imgData, index) => (
+                <img
+                  key={index}
+                  src={imgData}
+                  alt={`Item being analyzed ${index + 1}`}
+                  className="w-full h-24 object-cover rounded-lg border"
+                />
+              ))}
+              {imageDatas.length > 4 && (
+                <div className="w-full h-24 bg-gray-100 rounded-lg border flex items-center justify-center text-sm text-gray-500">
+                  +{imageDatas.length - 4} more
+                </div>
+              )}
+            </div>
+          ) : (
+            imageData && (
+              <img
+                src={imageData}
+                alt="Item being analyzed"
+                className="w-full h-auto max-h-64 object-cover rounded-lg border"
+              />
+            )
           )}
 
           <div className="flex flex-col items-center gap-4 py-8">
             <Loader2 className="w-12 h-12 animate-spin text-primary" />
             <div className="text-center space-y-2">
-              <p className="font-medium">Processing image...</p>
+              <p className="font-medium">
+                Processing {allowMultiplePhotos && imageDatas.length > 1 ? `${imageDatas.length} images` : 'image'}...
+              </p>
               <p className="text-sm text-muted-foreground">
-                This may take a few seconds
+                This may take {allowMultiplePhotos && imageDatas.length > 1 ? '10-30 seconds' : 'a few seconds'}
               </p>
             </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setStep('camera')
+                setError('')
+                setIsAnalyzing(false)
+              }}
+              disabled={disabled}
+              className="flex-1"
+            >
+              Cancel Analysis
+            </Button>
           </div>
 
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
               {error}
+              <div className="mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setStep('camera')}
+                  className="text-red-700 border-red-300 hover:bg-red-100"
+                >
+                  Try Again
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
@@ -253,30 +352,98 @@ export default function AIItemIdentifier({
 
   if (step === 'review' && identifiedItem && editedItem) {
     return (
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            AI Item Identification Results
-          </CardTitle>
-          <CardDescription>
-            Review and edit the AI-generated item details before saving
-          </CardDescription>
-        </CardHeader>
+      <div className="w-full max-w-6xl mx-auto">
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+            <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+              <Sparkles className="w-5 h-5 text-primary" />
+              {allowMultiplePhotos && identifiedItems.length > 1
+                ? `AI Results - Item ${currentItemIndex + 1} of ${identifiedItems.length}`
+                : 'AI Item Identification Results'
+              }
+            </CardTitle>
+            <CardDescription className="text-sm md:text-base">
+              {allowMultiplePhotos && identifiedItems.length > 1
+                ? 'Review each identified item and edit details as needed'
+                : 'Review and edit the AI-generated item details before saving'
+              }
+            </CardDescription>
+          </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Navigation for multiple items */}
+          {allowMultiplePhotos && identifiedItems.length > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrevItem}
+                disabled={currentItemIndex === 0}
+                className="w-full sm:w-auto"
+              >
+                ← Previous
+              </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600">Item</span>
+                <div className="flex gap-1">
+                  {identifiedItems.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setCurrentItemIndex(index)
+                        setEditedItem({ ...identifiedItems[index] })
+                        setIsEditing(false)
+                      }}
+                      className={`w-3 h-3 rounded-full transition-colors ${
+                        index === currentItemIndex ? 'bg-primary' : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-gray-600">
+                  {currentItemIndex + 1} of {identifiedItems.length}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextItem}
+                disabled={currentItemIndex === identifiedItems.length - 1}
+                className="w-full sm:w-auto"
+              >
+                Next →
+              </Button>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
             {/* Image Preview */}
-            <div>
-              <img
-                src={imageData}
-                alt="Identified item"
-                className="w-full h-auto max-h-80 object-cover rounded-lg border"
-              />
+            <div className="space-y-3">
+              <div className="relative">
+                {(imageDatas[currentItemIndex] || imageData) ? (
+                  <img
+                    src={imageDatas[currentItemIndex] || imageData}
+                    alt={`Identified item ${currentItemIndex + 1}`}
+                    className="w-full h-auto max-h-80 object-cover rounded-lg border shadow-sm"
+                  />
+                ) : (
+                  <div className="w-full h-80 bg-gray-100 rounded-lg border shadow-sm flex items-center justify-center">
+                    <div className="text-center text-gray-500">
+                      <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p>No image available</p>
+                    </div>
+                  </div>
+                )}
+                {allowMultiplePhotos && identifiedItems.length > 1 && (
+                  <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium">
+                    Image {currentItemIndex + 1} of {identifiedItems.length}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Item Details */}
-            <div className="space-y-4">
+            <div className="space-y-4 md:space-y-4">
               {/* Confidence Score */}
               <div className={`p-3 rounded-lg border ${getConfidenceColor(identifiedItem.confidenceScore)}`}>
                 <div className="flex items-center gap-2">
@@ -309,7 +476,7 @@ export default function AIItemIdentifier({
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Category</label>
                     {isEditing ? (
@@ -356,7 +523,7 @@ export default function AIItemIdentifier({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Quantity</label>
                     {isEditing ? (
@@ -386,7 +553,7 @@ export default function AIItemIdentifier({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">Estimated Value (₹)</label>
                     {isEditing ? (
@@ -448,40 +615,65 @@ export default function AIItemIdentifier({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4 border-t">
-            {isEditing ? (
-              <>
-                <Button onClick={handleSaveEdit} className="flex-1">
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </Button>
-                <Button variant="outline" onClick={handleCancelEdit} className="flex-1">
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button onClick={handleEdit} variant="outline" className="flex-1">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Details
-                </Button>
-                <Button
-                  onClick={handleConfirm}
-                  className="flex-1 bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Add Item
-                </Button>
-              </>
-            )}
+          <div className="border-t pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {isEditing ? (
+                <>
+                  <Button onClick={handleSaveEdit} className="w-full sm:col-span-2">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </Button>
+                  <Button variant="outline" onClick={handleCancelEdit} className="w-full">
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={handleEdit}
+                    variant="outline"
+                    className="w-full order-1 sm:order-1"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Details
+                  </Button>
+                  <Button
+                    onClick={handleConfirm}
+                    className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white order-2 sm:order-2"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    {allowMultiplePhotos && identifiedItems.length > 1
+                      ? `Add ${identifiedItems.length} Items`
+                      : 'Add Item'
+                    }
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setStep('camera')}
+                    className="w-full order-3 sm:order-3"
+                  >
+                    <Camera className="w-4 h-4 mr-2" />
+                    Retake
+                  </Button>
+                </>
+              )}
+            </div>
 
-            <Button variant="outline" onClick={() => setStep('camera')}>
-              <Camera className="w-4 h-4 mr-2" />
-              Retake Photo
-            </Button>
+            {/* Progress indicator for multiple items */}
+            {allowMultiplePhotos && identifiedItems.length > 1 && !isEditing && (
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center gap-2 text-sm text-gray-600">
+                  <span>Reviewing item {currentItemIndex + 1} of {identifiedItems.length}</span>
+                  {currentItemIndex < identifiedItems.length - 1 && (
+                    <span className="text-blue-600">→ Continue to review all items before adding</span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     )
   }
 

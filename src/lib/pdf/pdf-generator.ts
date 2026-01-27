@@ -312,7 +312,7 @@ export class PDFGenerator {
                   this.pageWidth / 2, footerY + 3, { align: 'center' })
 
     // Page number
-    const pageCount = this.pdf.internal.getNumberOfPages()
+    const pageCount = this.pdf.getNumberOfPages()
     for (let i = 1; i <= pageCount; i++) {
       this.pdf.setPage(i)
       this.pdf.text(`Page ${i} of ${pageCount}`, this.pageWidth - this.margin, footerY, { align: 'right' })
