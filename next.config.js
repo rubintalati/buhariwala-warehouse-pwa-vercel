@@ -23,10 +23,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Vercel optimizations
-  experimental: {
-    // Enable Vercel Edge Runtime for better performance
-    serverComponentsExternalPackages: ['@google/generative-ai'],
-  },
+  serverExternalPackages: ['@google/generative-ai'],
   typescript: {
     // Enable strict TypeScript checking for production
     ignoreBuildErrors: false,
