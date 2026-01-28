@@ -37,8 +37,13 @@ interface ItemIdentification {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now()
+
   try {
+    console.log('[AI API] Request started at:', new Date().toISOString())
+
     if (!process.env.GOOGLE_AI_API_KEY) {
+      console.error('[AI API] Google AI API key not configured')
       return NextResponse.json(
         { error: 'Google AI API key not configured' },
         { status: 500 }
@@ -63,19 +68,67 @@ export async function POST(request: NextRequest) {
     }
 
     if (!files.length) {
+      console.warn('[AI API] No image files provided')
       return NextResponse.json(
         { error: 'No image file(s) provided' },
         { status: 400 }
       )
     }
 
-    // Process all images
+    console.log(`[AI API] Processing ${files.length} image(s), room type: ${roomType}`)
+
+    // Validate file sizes (max 10MB per file, max 50MB total)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    const MAX_TOTAL_SIZE = 50 * 1024 * 1024 // 50MB
+    let totalSize = 0
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      if (file.size > MAX_FILE_SIZE) {
+        console.error(`[AI API] File ${i} too large: ${file.size} bytes`)
+        return NextResponse.json(
+          { error: `Image ${i + 1} is too large (max 10MB per file)` },
+          { status: 400 }
+        )
+      }
+      totalSize += file.size
+    }
+
+    if (totalSize > MAX_TOTAL_SIZE) {
+      console.error(`[AI API] Total size too large: ${totalSize} bytes`)
+      return NextResponse.json(
+        { error: `Total image size too large (max 50MB total)` },
+        { status: 400 }
+      )
+    }
+
+    console.log(`[AI API] Total payload size: ${(totalSize / 1024 / 1024).toFixed(2)}MB`)
+
+    // Process images sequentially to avoid memory issues
     const results: ItemIdentification[] = []
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
+      const fileStartTime = Date.now()
 
       try {
+        console.log(`[AI API] Processing image ${i + 1}/${files.length}: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`)
+
+        // Check remaining time (leave 30s buffer for response)
+        const elapsed = Date.now() - startTime
+        const remainingTime = 280000 - elapsed // 280s out of 300s
+
+        if (remainingTime < 30000) {
+          console.warn(`[AI API] Insufficient time remaining: ${remainingTime}ms`)
+          return NextResponse.json(
+            {
+              error: `Processing timeout. Completed ${i} of ${files.length} images.`,
+              partialResults: results,
+              processedCount: i
+            },
+            { status: 408 }
+          )
+        }
         // Convert file to base64
         const bytes = await file.arrayBuffer()
         const base64 = Buffer.from(bytes).toString('base64')
@@ -121,6 +174,9 @@ Return only the JSON response, no additional text.`
         // Call Gemini API
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
+        console.log(`[AI API] Calling Gemini API for image ${i + 1}...`)
+        const geminiStartTime = Date.now()
+
         const result = await model.generateContent([
           prompt,
           {
@@ -134,15 +190,18 @@ Return only the JSON response, no additional text.`
         const response = await result.response
         const text = response.text()
 
+        console.log(`[AI API] Gemini response for image ${i + 1} received in ${Date.now() - geminiStartTime}ms`)
+
         // Parse the JSON response
         let itemData: ItemIdentification
         try {
           // Clean the response in case it has markdown formatting
           const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
           itemData = JSON.parse(cleanedText)
+          console.log(`[AI API] Successfully parsed response for image ${i + 1}: ${itemData.itemName}`)
         } catch (parseError) {
-          console.error(`Error parsing Gemini response for image ${i + 1}:`, parseError)
-          console.error('Raw response:', text)
+          console.error(`[AI API] Error parsing Gemini response for image ${i + 1}:`, parseError)
+          console.error('[AI API] Raw response:', text)
 
           // Fallback response
           itemData = {
@@ -162,10 +221,12 @@ Return only the JSON response, no additional text.`
 
         // Validate the response
         if (!ITEM_CATEGORIES.includes(itemData.category)) {
+          console.warn(`[AI API] Invalid category "${itemData.category}" for image ${i + 1}, using "Other"`)
           itemData.category = 'Other'
         }
 
         if (!CONDITION_OPTIONS.includes(itemData.condition)) {
+          console.warn(`[AI API] Invalid condition "${itemData.condition}" for image ${i + 1}, using "good"`)
           itemData.condition = 'good'
         }
 
@@ -174,8 +235,11 @@ Return only the JSON response, no additional text.`
 
         results.push(itemData)
 
+        const fileProcessTime = Date.now() - fileStartTime
+        console.log(`[AI API] Image ${i + 1} processed successfully in ${fileProcessTime}ms`)
+
       } catch (imageError) {
-        console.error(`Error processing image ${i + 1}:`, imageError)
+        console.error(`[AI API] Error processing image ${i + 1}:`, imageError)
         // Add fallback item for failed image processing
         results.push({
           itemName: `Failed to Process Image ${i + 1}`,
@@ -193,14 +257,23 @@ Return only the JSON response, no additional text.`
       }
     }
 
+    const totalProcessTime = Date.now() - startTime
+    console.log(`[AI API] All ${files.length} images processed successfully in ${totalProcessTime}ms`)
+
     return NextResponse.json({
       success: true,
       data: files.length === 1 ? results[0] : results,
+      metadata: {
+        processedCount: results.length,
+        totalFiles: files.length,
+        processingTimeMs: totalProcessTime
+      },
       count: results.length
     })
 
   } catch (error) {
-    console.error('Error in AI item identification:', error)
+    console.error('[AI API] Error in AI item identification:', error)
+    const totalProcessTime = Date.now() - startTime
 
     return NextResponse.json(
       {

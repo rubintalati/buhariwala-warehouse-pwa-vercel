@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -46,9 +46,49 @@ export default function AIItemIdentifier({
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState('')
   const [isEditing, setIsEditing] = useState(false)
+  const [persistentImageURLs, setPersistentImageURLs] = useState<string[]>([])
 
   // Editable form state
   const [editedItem, setEditedItem] = useState<AIIdentifiedItem | null>(null)
+
+  // Image compression utility
+  const compressImage = (file: File, quality: number = 0.7, maxWidth: number = 1200): Promise<File> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')!
+      const img = new Image()
+
+      img.onload = () => {
+        // Calculate new dimensions
+        let { width, height } = img
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width
+          width = maxWidth
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height)
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], `compressed-${file.name}`, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            })
+            console.log(`Compressed ${file.name} from ${(file.size / 1024).toFixed(2)}KB to ${(compressedFile.size / 1024).toFixed(2)}KB`)
+            resolve(compressedFile)
+          } else {
+            resolve(file) // Fallback to original if compression fails
+          }
+        }, 'image/jpeg', quality)
+      }
+
+      img.src = URL.createObjectURL(file)
+    })
+  }
 
   // Backward compatibility
   const imageData = imageDatas[0] || ''
@@ -126,20 +166,60 @@ export default function AIItemIdentifier({
       return
     }
 
+    // Create persistent blob URLs for image previews
+    const persistentURLs = files.map(file => {
+      return URL.createObjectURL(file)
+    })
+
+    setPersistentImageURLs(persistentURLs)
+
     setStep('analyzing')
     setIsAnalyzing(true)
     setError('')
 
     try {
+      console.log('[Client] Starting handleMultiplePhotosProcess')
+      console.log('[Client] Files received:', files.length)
+      console.log('[Client] ImageDatas received:', imageDatas.length)
+      console.log('Compressing images before upload...')
+      console.log('Original files:', files.map(f => ({ name: f.name, size: f.size, type: f.type })))
+
+      // Compress images to reduce payload size
+      const compressedFiles = await Promise.all(
+        files.map(async (file, index) => {
+          try {
+            console.log(`[Client] Compressing image ${index + 1}: ${file.name}`)
+            const compressed = await compressImage(file, 0.8, 1200)
+            console.log(`[Client] Compressed ${file.name}: ${(file.size / 1024).toFixed(2)}KB → ${(compressed.size / 1024).toFixed(2)}KB`)
+            return compressed
+          } catch (error) {
+            console.warn(`[Client] Failed to compress ${file.name}, using original:`, error)
+            return file
+          }
+        })
+      )
+
+      console.log('[Client] All images compressed, total files:', compressedFiles.length)
+
       const formData = new FormData()
-      files.forEach((file, index) => {
+      compressedFiles.forEach((file, index) => {
         formData.append(`image${index}`, file)
       })
       formData.append('roomType', roomType)
 
-      // Add timeout to prevent hanging
+      // Add timeout to prevent hanging (match server timeout)
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 280000) // 280 second timeout (280s client, 300s server)
+
+      console.log('[Client] Starting API call to /api/ai/identify-item')
+      console.log('[Client] FormData entries:')
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`[Client] ${key}: File(${value.name}, ${(value.size / 1024).toFixed(2)}KB, ${value.type})`)
+        } else {
+          console.log(`[Client] ${key}: ${value}`)
+        }
+      }
 
       const response = await fetch('/api/ai/identify-item', {
         method: 'POST',
@@ -149,9 +229,17 @@ export default function AIItemIdentifier({
 
       clearTimeout(timeoutId)
 
+      console.log('[Client] Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      })
+
       const result = await response.json()
+      console.log('[Client] Response data:', result)
 
       if (!response.ok) {
+        console.error('[Client] API Error:', result)
         throw new Error(result.error || 'Failed to identify items')
       }
 
@@ -245,6 +333,15 @@ export default function AIItemIdentifier({
     if (score >= 0.6) return 'Medium Confidence'
     return 'Low Confidence'
   }
+
+  // Cleanup blob URLs on component unmount
+  useEffect(() => {
+    return () => {
+      persistentImageURLs.forEach(url => {
+        URL.revokeObjectURL(url)
+      })
+    }
+  }, [persistentImageURLs])
 
   if (step === 'camera') {
     return (
@@ -420,11 +517,16 @@ export default function AIItemIdentifier({
             {/* Image Preview */}
             <div className="space-y-3">
               <div className="relative">
-                {(imageDatas[currentItemIndex] || imageData) ? (
+                {(persistentImageURLs[currentItemIndex] || imageDatas[currentItemIndex] || imageData) ? (
                   <img
-                    src={imageDatas[currentItemIndex] || imageData}
+                    src={persistentImageURLs[currentItemIndex] || imageDatas[currentItemIndex] || imageData}
                     alt={`Identified item ${currentItemIndex + 1}`}
                     className="w-full h-auto max-h-80 object-cover rounded-lg border shadow-sm"
+                    onError={(e) => {
+                      console.error('Image failed to load:', e)
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                    }}
                   />
                 ) : (
                   <div className="w-full h-80 bg-gray-100 rounded-lg border shadow-sm flex items-center justify-center">
